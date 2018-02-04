@@ -20,65 +20,82 @@ const display = () => {
 
   function people() {
     reset();
-    const data = JSON.parse(this.responseText);
-    name = data.name;
-    Name.innerText = name;
-    One.innerText = capitalizeFirstLetter(data.gender);
+    if (this.status !== 200) {
+      Name.innerText = `Error: Fetching Resource at http://swapi.co/api/${dropdown}/${input}/ was not found`;
+    } else {
+      const data = JSON.parse(this.responseText);
+      name = data.name;
+      Name.innerText = name;
+      One.innerText = capitalizeFirstLetter(data.gender);
 
-    //Two will need to do a request
-    const oReq2 = new XMLHttpRequest();
+      //Two will need to do a request
+      const oReq2 = new XMLHttpRequest();
 
-    function p2() {
-      const species = JSON.parse(this.responseText).name;
-      Two.innerText = species;
+      function p2() {
+        const species = JSON.parse(this.responseText).name;
+        Two.innerText = species;
+      }
+
+      oReq2.addEventListener("load", p2);
+      oReq2.open("GET", data.species);
+      oReq2.send();
     }
-
-    oReq2.addEventListener("load", p2);
-    oReq2.open("GET", data.species);
-    oReq2.send();
   }
 
   function planets() {
     reset();
-    const data = JSON.parse(this.responseText);
-    name = data.name;
-    Name.innerText = name;
-    One.innerText = capitalizeFirstLetter(data.terrain);
-    Two.innerText = data.population;
+    if (this.status !== 200) {
+      Name.innerText = `Error: Fetching Resource at http://swapi.co/api/${dropdown}/${input}/ was not found`;
+    } else {
+      const data = JSON.parse(this.responseText);
+      name = data.name;
+      Name.innerText = name;
+      One.innerText = capitalizeFirstLetter(data.terrain);
+      Two.innerText = data.population;
 
-    data.films.forEach(e => {
-      const Req2 = new XMLHttpRequest();
+      data.films.forEach(e => {
+        const Req2 = new XMLHttpRequest();
 
-      function reqListener2() {
-        let reqObj2 = JSON.parse(this.responseText);
-        List.innerHTML += `<li>${reqObj2.title}</li>`;
-      }
+        function reqListener2() {
+          let reqObj2 = JSON.parse(this.responseText);
+          List.innerHTML += `<li>${reqObj2.title}</li>`;
+        }
 
-      Req2.addEventListener("load", reqListener2);
-      Req2.open("GET", e);
-      Req2.send();
-    });
+        Req2.addEventListener("load", reqListener2);
+        Req2.open("GET", e);
+        Req2.send();
+      });
+    }
   }
 
   function starships() {
     reset();
-    const data = JSON.parse(this.responseText);
-    console.log(data);
-    name = data.name;
-    Name.innerText = name;
-    One.innerText = capitalizeFirstLetter(data.gender);
+    if (this.status !== 200) {
+      Name.innerText = `Error: Fetching Resource at http://swapi.co/api/${dropdown}/${input}/ was not found`;
+    } else {
+      const data = JSON.parse(this.responseText);
+      console.log(data);
+      Name.innerText = data.name;
+      One.innerText = capitalizeFirstLetter(data.manufacturer);
+      Two.innerText = data.starship_class;
 
-    //Two will need to do a request
-    const oReq2 = new XMLHttpRequest();
+      data.films.forEach(e => {
+        const Req2 = new XMLHttpRequest();
 
-    function p2() {
-      const species = JSON.parse(this.responseText).name;
-      Two.innerText = species;
+        function reqListener2() {
+          let reqObj2 = JSON.parse(this.responseText);
+          List.innerHTML += `<li>${reqObj2.title}</li>`;
+        }
+
+        Req2.addEventListener("load", reqListener2);
+        Req2.open("GET", e);
+        Req2.send();
+      });
     }
+  }
 
-    oReq2.addEventListener("load", p2);
-    oReq2.open("GET", data.species);
-    oReq2.send();
+  function noWork() {
+    console.log("here i am");
   }
 
   if (dropdown === "people") {
@@ -88,9 +105,10 @@ const display = () => {
   } else if (dropdown === "starships") {
     oReq.addEventListener("load", starships);
   } else {
-    aler("Whoops!");
+    oReq.addEventListener("error", noWork);
   }
   oReq.open("GET", `https://swapi.co/api/${dropdown}/${input}/`);
+  oReq.upload.addEventListener("error", noWork);
   oReq.send();
 };
 
